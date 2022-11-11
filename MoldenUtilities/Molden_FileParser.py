@@ -35,32 +35,27 @@ def Get_Atoms(moldenfile):
 def Get_Gaussian_Type_Orbitals(moldenfile):
     with open(moldenfile) as f:
         lines = f.readlines()
-    orbitals_information = []
     capture = False
     new_orb = []
+    basis_set_collection = []
     for line in lines:
         if "[MO]" in line:
             capture = False
-            orbitals_information.append(new_orb)
         if capture:
             if line == "\n":
                 pass
             elif line[4] != " ":
-                pass
-            elif line[1] != " ":
-                splitline = line.split()
-                orbital=splitline[0]
-                orbitals_information.append(new_orb)
-                new_orb = [orbital]
-            else:
-                splitline = line.split()
-                exponent_primitive = splitline[0]
-                contraction_coeff = splitline[1]
-                new_orb.append(exponent_primitive)
-                new_orb.append(contraction_coeff)
+                atom_number= line.split()[0]
+            elif len(line.strip().split()) == 3: 
+                orb_type =  line.split()[0]
+            elif len(line.strip().split()) == 2:
+                prim_exp = line.strip().split()[0]
+                con_coef = line.strip().split()[1]
+                basis_set_collection.append( [atom_number, orb_type, prim_exp, con_coef] )
         if "[GTO]" in line:
             capture = True
-    return orbitals_information    
+    return basis_set_collection
+
     
 
 def Get_Molecular_Orbitals(moldenfile):
